@@ -1,6 +1,15 @@
 DAI Lab - HTTP infrastructure
 =============================
 
+
+
+### How to launch
+
+
+
+`docker-compose up --build -d`
+
+
 Objectives
 ----------
 
