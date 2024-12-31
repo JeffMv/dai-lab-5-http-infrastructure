@@ -1,9 +1,9 @@
-# Base image
-FROM php:apache
+FROM openjdk:23
 
-# Copy PHP application to the Apache web directory
-COPY src/ /var/www/html
+WORKDIR /
 
-# Expose port 80
-EXPOSE 80
+COPY src/target/dai-labo-5-http-api-1.0-SNAPSHOT.jar app.jar
 
+EXPOSE 7070
+
+ENTRYPOINT ["java","-jar","/app.jar"]

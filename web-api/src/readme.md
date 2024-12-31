@@ -1,5 +1,18 @@
 # API TASK
 
+## install
+
+compile the project
+> cd src
+> mvn clean package
+> cd ..
+
+create a docker image
+> docker build -t todo-list:latest .
+
+create a Docker container
+> docker run -d -p 7070:7070 todo-list
+
 ## HTTP Requests
 
 | Action              | Verb   | Route                   | Response                                |
