@@ -10,8 +10,8 @@ services:
 
   apibackend:
     build:
-      context: ./web-api  # Build from the php/ directory
-    container_name: php-webserver
+      context: ./web-api  # Build from the directory
+    container_name: api-todo-list
     ports:
-      - "8081:80"  # Map port 8081 on the host to port 80 in the container
+      - "8081:7070"  # Map port 8081 on the host to port 80 in the container
 
