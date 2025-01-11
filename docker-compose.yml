@@ -2,6 +2,7 @@
 
 services:
   webapp:
+    image: "web-page-static"
     build:
       context: ./webapp-static  # Build from the nginx/ directory
     container_name: html-nginx-static
@@ -9,6 +10,7 @@ services:
       - "8080:80"  # Map port 8080 on the host to port 80 in the container
 
   apibackend:
+    image: "api-todo-list-javalin"
     build:
       context: ./web-api  # Build from the directory
     container_name: api-todo-list
