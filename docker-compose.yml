@@ -5,15 +5,44 @@ services:
     image: "web-page-static"
     build:
       context: ./webapp-static  # Build from the nginx/ directory
-    container_name: html-nginx-static
-    ports:
-      - "8080:80"  # Map port 8080 on the host to port 80 in the container
+    #container_name: html-nginx-static
+    deploy:
+      replicas: 5
+    networks:
+      - traefik-network
+    labels:
+     - traefik.http.routers.webapp.entryPoints=http
+     - traefik.http.routers.webapp.rule=PathPrefix(`/`)
+     - traefik.http.services.webapp.loadbalancer.server.port=80
 
   apibackend:
     image: "api-todo-list-javalin"
     build:
       context: ./web-api  # Build from the directory
-    container_name: api-todo-list
-    ports:
-      - "8081:7070"  # Map port 8081 on the host to port 80 in the container
+    #container_name: api-todo-list
+    deploy:
+      replicas: 5
+    networks:
+      - traefik-network
+    labels:
+     - traefik.http.routers.apibackend.entryPoints=http
+     - traefik.http.routers.apibackend.rule=PathPrefix(`/api`)
+     - traefik.http.services.apibackend.loadbalancer.server.port=7070
 
+  reverse_proxy:
+    image: traefik
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker"
+      - "--entryPoints.http.address=:80"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - traefik-network
+    ports:
+      - "8080:8080" # treafik
+      - "80:80" # web static page
+
+networks:
+  traefik-network:
+    driver: bridge
