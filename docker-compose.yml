@@ -35,8 +35,14 @@ services:
       - "--api.insecure=true"
       - "--providers.docker"
       - "--entryPoints.http.address=:80"
+
+      - "--log.level=DEBUG"
+      - "--accesslog=true"
+      - "--accesslog.filepath=/var/log/traefik/access.log"
+      - "--accesslog.format=json"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./logs:/var/log/traefik
     networks:
       - traefik-network
     ports:
