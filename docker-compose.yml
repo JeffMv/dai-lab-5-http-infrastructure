@@ -7,7 +7,7 @@ services:
       context: ./webapp-static  # Build from the nginx/ directory
     #container_name: html-nginx-static
     deploy:
-      replicas: 5
+      replicas: 3
     networks:
       - traefik-network
     labels:
@@ -21,13 +21,17 @@ services:
       context: ./web-api  # Build from the directory
     #container_name: api-todo-list
     deploy:
-      replicas: 5
+      replicas: 6
     networks:
       - traefik-network
     labels:
      - traefik.http.routers.apibackend.entryPoints=http
      - traefik.http.routers.apibackend.rule=PathPrefix(`/api`)
      - traefik.http.services.apibackend.loadbalancer.server.port=7070
+
+     - traefik.http.services.apibackend.loadbalancer.sticky.cookie=true
+     - traefik.http.services.apibackend.loadbalancer.sticky.cookie.name=sticky-cookie
+     - traefik.http.services.apibackend.loadbalancer.sticky.cookie.secure=false
 
   reverse_proxy:
     image: traefik
@@ -38,7 +42,7 @@ services:
 
       - "--log.level=DEBUG"
       - "--accesslog=true"
-      - "--accesslog.filepath=/var/log/traefik/access.log"
+      - "--accesslog.filepath=/var/log/traefik/access.json"
       - "--accesslog.format=json"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -46,7 +50,7 @@ services:
     networks:
       - traefik-network
     ports:
-      - "8080:8080" # treafik
+      - "8080:8080" # traefik
       - "80:80" # web static page
 
 networks:
