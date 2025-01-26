@@ -7,7 +7,7 @@ services:
       context: ./webapp-static  # Build from the nginx/ directory
     #container_name: html-nginx-static
     deploy:
-      replicas: 1
+      replicas: 3
     networks:
       - traefik-network
     labels:
@@ -25,7 +25,7 @@ services:
       context: ./web-api  # Build from the directory
     #container_name: api-todo-list
     deploy:
-      replicas: 1
+      replicas: 5
     networks:
       - traefik-network
     labels:
