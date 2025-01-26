@@ -11,9 +11,13 @@ services:
     networks:
       - traefik-network
     labels:
-     - traefik.http.routers.webapp.entryPoints=http
-     - traefik.http.routers.webapp.rule=PathPrefix(`/`)
-     - traefik.http.services.webapp.loadbalancer.server.port=80
+      - traefik.enable=true
+     #- traefik.http.routers.webapp.entryPoints=http
+      - traefik.http.routers.webapp.entryPoints=https
+      - traefik.http.routers.webapp.rule=PathPrefix(`/`)
+      - traefik.http.routers.webapp.tls=true
+      - traefik.http.services.webapp.loadbalancer.server.port=80
+     
 
   apibackend:
     image: "api-todo-list-javalin"
@@ -21,37 +25,65 @@ services:
       context: ./web-api  # Build from the directory
     #container_name: api-todo-list
     deploy:
-      replicas: 6
+      replicas: 5
     networks:
       - traefik-network
     labels:
-     - traefik.http.routers.apibackend.entryPoints=http
-     - traefik.http.routers.apibackend.rule=PathPrefix(`/api`)
-     - traefik.http.services.apibackend.loadbalancer.server.port=7070
+      - traefik.enable=true
+     #- traefik.http.routers.apibackend.entryPoints=http
+      - traefik.http.routers.apibackend.entryPoints=https
+      - traefik.http.routers.apibackend.rule=PathPrefix(`/api`)
+      - traefik.http.routers.apibackend.tls=true
+      - traefik.http.services.apibackend.loadbalancer.server.port=7070
+     
 
-     - traefik.http.services.apibackend.loadbalancer.sticky.cookie=true
-     - traefik.http.services.apibackend.loadbalancer.sticky.cookie.name=sticky-cookie
-     - traefik.http.services.apibackend.loadbalancer.sticky.cookie.secure=false
+      - traefik.http.services.apibackend.loadbalancer.sticky.cookie=true
+      - traefik.http.services.apibackend.loadbalancer.sticky.cookie.name=sticky-cookie
+      - traefik.http.services.apibackend.loadbalancer.sticky.cookie.secure=false
+
 
   reverse_proxy:
     image: traefik
     command:
-      - "--api.insecure=true"
+      #- "--api.insecure=true"
       - "--providers.docker"
-      - "--entryPoints.http.address=:80"
+      #- "--entryPoints.http.address=:80"
+      - "--configFile=/etc/traefik/traefik.yaml"
 
-      - "--log.level=DEBUG"
-      - "--accesslog=true"
-      - "--accesslog.filepath=/var/log/traefik/access.json"
-      - "--accesslog.format=json"
+      #- "--log.level=DEBUG"
+      #- "--accesslog=true"
+      #- "--accesslog.filepath=/var/log/traefik/access.log"
+      #- "--accesslog.format=json"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./logs:/var/log/traefik
+      #- ./logs:/var/log/traefik
+      - ./traefik.yaml:/etc/traefik/traefik.yaml
+      - ./traefik-certificates:/etc/traefik/certificates
+
     networks:
       - traefik-network
     ports:
       - "8080:8080" # traefik
-      - "80:80" # web static page
+      - "80:80" # HTTP
+      - "443:443" # HTTPS
+
+  portainer:
+    image: portainer/portainer-ce
+    container_name: portainer
+    restart: always
+    ports:
+      - "9000:9000" # Port d'accès à l'interface
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # Permet d'accéder à Docker
+      - ./portainer-data:/data
+    networks:
+      - traefik-network
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.portainer.entryPoints=https
+      - traefik.http.routers.portainer.rule=PathPrefix(`/portainer`)
+      - traefik.http.routers.portainer.tls=true
+
 
 networks:
   traefik-network:
