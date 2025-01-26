@@ -8,7 +8,8 @@ services:
     container_name: html-nginx-static
     ports:
       - "8080:80"  # Map port 8080 on the host to port 80 in the container
-
+      - "8090:8090"  # Map port 8090 on the host to port 8090 in the container
+  
   apibackend:
     image: "api-todo-list-javalin"
     build:
