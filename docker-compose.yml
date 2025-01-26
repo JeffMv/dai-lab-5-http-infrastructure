@@ -67,6 +67,24 @@ services:
       - "80:80" # HTTP
       - "443:443" # HTTPS
 
+  portainer:
+    image: portainer/portainer-ce
+    container_name: portainer
+    restart: always
+    ports:
+      - "9000:9000" # Port d'accès à l'interface
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # Permet d'accéder à Docker
+      - ./portainer-data:/data
+    networks:
+      - traefik-network
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.portainer.entryPoints=https
+      - traefik.http.routers.portainer.rule=PathPrefix(`/portainer`)
+      - traefik.http.routers.portainer.tls=true
+
+
 networks:
   traefik-network:
     driver: bridge
