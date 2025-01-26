@@ -19,14 +19,13 @@ export default {
 
 <template>
   
-  <div v-for="el in tasks ">
+  <div v-for="el in tasks" :key="el.id" class="task-card">
+  <strong class="task-title">{{ el.title }}</strong>
+  <p class="task-date"><em>{{ el.dueDate }}</em></p>
+  <p :class="['task-priority', el.priority.toLowerCase()]">{{ el.priority }}</p>
+  <p class="task-description">{{ el.description }}</p>
+</div>
 
-    <strong>{{ el.title }}</strong> 
-    <p><em> {{ el.dueDate }}</em></p>
-    <p :class="el.priority.toLowerCase()">{{ el.priority }}</p>
-    <p>{{ el.description }}</p>
-
-  </div>
 </template>
 
 <style scoped>
