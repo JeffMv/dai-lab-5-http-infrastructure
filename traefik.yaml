@@ -1,0 +1,17 @@
+entryPoints:
+  http:
+    address: ":80"
+  https:
+    address: ":443"
+
+providers:
+  docker:
+    exposedByDefault: false
+
+api:
+  dashboard: true
+
+tls:
+  certificates:
+    - certFile: "/etc/traefik/certificates/server.crt"
+      keyFile: "/etc/traefik/certificates/server.key"
